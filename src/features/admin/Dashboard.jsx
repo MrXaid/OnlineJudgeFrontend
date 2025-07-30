@@ -9,7 +9,7 @@ const Dashboard = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Link to="/admin/users" className="bg-white shadow-md hover:shadow-xl transition rounded-2xl p-6 flex items-center gap-4 border border-gray-200 hover:border-blue-400">
+        <Link to="/users" className="bg-white shadow-md hover:shadow-xl transition rounded-2xl p-6 flex items-center gap-4 border border-gray-200 hover:border-blue-400">
           <Users className="w-8 h-8 text-blue-500" />
           <div>
             <p className="text-lg font-semibold text-gray-800">Manage Users</p>

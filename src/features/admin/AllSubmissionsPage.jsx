@@ -54,7 +54,15 @@ const AllSubmissionsPage = () => {
                 <tr key={sub.id} className="border-t hover:bg-gray-50">
                   <td className="p-3">{index + 1}</td>
                   <td className="p-3">{sub.username}</td>
-                  <td className="p-3">{sub.problemName}</td>
+                  {/* <td className="p-3">{sub.problemName}</td> */}
+                  <td className="p-3">
+                    <Link
+                      to={`/problems/${sub.problemId}`}
+                        className="text-blue-600 hover:underline"
+                    >
+                    {sub.problemName}
+                    </Link>
+                  </td>
                   <td className="p-3">{sub.language}</td>
                   <td
                     className={`p-3 font-semibold ${

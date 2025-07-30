@@ -5,8 +5,22 @@ import CodeEditor from '@/features/submissions/CodeEditor';
 import SubmissionForm from '@/features/submissions/SubmissionForm';
 import SubmissionDetail from '@/features/submissions/SubmissionDetail';
 import { LANGUAGES } from '@/constants/languages';
-import { Badge } from '@/components/ui/badge';
 import submissionService from '@/services/submissionService';
+import { Badge } from '@/components/ui/badge';
+import { getTagColorClass } from '@/constants/tags';
+
+const getDifficultyClass = (level) => {
+  switch (level.toLowerCase()) {
+    case 'easy':
+      return 'bg-green-100 text-green-800 border border-green-300';
+    case 'medium':
+      return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
+    case 'hard':
+      return 'bg-red-100 text-red-800 border border-red-300';
+    default:
+      return 'bg-gray-100 text-gray-800 border';
+  }
+};
 
 const ProblemDetailPage = () => {
   const { id } = useParams();
@@ -68,7 +82,7 @@ const ProblemDetailPage = () => {
       {/* Left Column: Problem Details */}
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold mb-2">{problem.name}</h1>
+          <h1 className="text-3xl font-bold">{problem.name}</h1>
           {hasAccepted && (
             <span className="text-sm px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium border border-green-300">
               Accepted
@@ -76,16 +90,16 @@ const ProblemDetailPage = () => {
           )}
         </div>
 
-        <div className="text-sm text-gray-500">
-          <span className="mr-4">
-            Author: <span className="text-gray-700 font-medium">{problem.author}</span>
-          </span>
-          <span>
-            Difficulty:{' '}
-            <span className="uppercase font-semibold text-green-600">
-              {problem.difficulty}
-            </span>
-          </span>
+        <div className="text-sm text-gray-600 flex flex-wrap gap-6">
+<div>
+  <span className="font-medium text-gray-700">Author:</span>{' '}
+  <Link to={`/users/${problem.author}`} className="text-blue-600 hover:underline">
+    {problem.author}
+  </Link>
+</div>
+          <div className={`px-2 py-1 text-xs rounded-full font-semibold uppercase ${getDifficultyClass(problem.difficulty)}`}>
+            {problem.difficulty}
+          </div>
         </div>
 
         <div className="prose dark:prose-invert max-w-none">
@@ -99,14 +113,16 @@ const ProblemDetailPage = () => {
           )}
         </div>
 
+        {/* Tags */}
         <div className="flex flex-wrap gap-2">
           {problem.tags.map((tag, idx) => (
-            <Badge key={idx} className="bg-blue-100 text-blue-800">
+            <Badge key={idx} className={getTagColorClass(tag)}>
               {tag}
             </Badge>
           ))}
         </div>
 
+        {/* Limits */}
         <div className="flex items-center gap-6 text-sm text-gray-600">
           <div>
             <strong>Time Limit:</strong> {problem.time} sec
@@ -123,9 +139,9 @@ const ProblemDetailPage = () => {
             {problem.sampleTestcases.map((tc, idx) => (
               <div key={idx} className="bg-gray-100 p-3 rounded mb-2">
                 <p className="text-sm font-medium">Input:</p>
-                <pre className="bg-white p-2 rounded">{tc.input}</pre>
+                <pre className="bg-white p-2 rounded whitespace-pre-wrap">{tc.input}</pre>
                 <p className="text-sm font-medium mt-2">Output:</p>
-                <pre className="bg-white p-2 rounded">{tc.output}</pre>
+                <pre className="bg-white p-2 rounded whitespace-pre-wrap">{tc.output}</pre>
               </div>
             ))}
           </div>
@@ -141,9 +157,9 @@ const ProblemDetailPage = () => {
               {problem.systemTestcases.map((tc, idx) => (
                 <div key={idx} className="bg-gray-50 p-3 rounded">
                   <p className="text-sm font-medium">Input:</p>
-                  <pre className="bg-white p-2 rounded">{tc.input}</pre>
+                  <pre className="bg-white p-2 rounded whitespace-pre-wrap">{tc.input}</pre>
                   <p className="text-sm font-medium mt-2">Output:</p>
-                  <pre className="bg-white p-2 rounded">{tc.output}</pre>
+                  <pre className="bg-white p-2 rounded whitespace-pre-wrap">{tc.output}</pre>
                 </div>
               ))}
             </div>
@@ -151,9 +167,8 @@ const ProblemDetailPage = () => {
         )}
       </div>
 
-      {/* Right Column: Editor + Submit + Submission History */}
+      {/* Right Column: Editor + Submission Form */}
       <div className="space-y-6">
-        {/* Language Selector */}
         <div className="flex gap-2 flex-wrap">
           {LANGUAGES.map((lang) => (
             <button
@@ -162,7 +177,7 @@ const ProblemDetailPage = () => {
               className={`px-3 py-1 border rounded transition ${
                 selectedLanguage === lang.id
                   ? 'bg-primary text-white'
-                  : 'hover:bg-gray-100'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
               {lang.name}
@@ -170,7 +185,6 @@ const ProblemDetailPage = () => {
           ))}
         </div>
 
-        {/* Editor — allows horizontal scrolling now */}
         <div className="h-[400px] overflow-x-auto">
           <CodeEditor
             language={LANGUAGES.find((l) => l.id === selectedLanguage)?.editorLanguage || 'cpp'}
@@ -179,7 +193,6 @@ const ProblemDetailPage = () => {
           />
         </div>
 
-        {/* Submit Button */}
         <SubmissionForm
           problemId={problem.id}
           code={code}
@@ -187,10 +200,8 @@ const ProblemDetailPage = () => {
           onSubmit={handleSubmissionResponse}
         />
 
-        {/* Last Submission Result */}
         {lastSubmission && <SubmissionDetail submission={lastSubmission} />}
 
-        {/* All Submissions */}
         {submissions.length > 0 && (
           <div className="mt-4">
             <button

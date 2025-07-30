@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import submissionService from '@/services/submissionService';
 
 const SubmissionsPage = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,17 +38,21 @@ const SubmissionsPage = () => {
                 <th className="p-3 text-left">Language</th>
                 <th className="p-3 text-left">Verdict</th>
                 <th className="p-3 text-left">Date</th>
+                <th className="p-3 text-left">Details</th>
               </tr>
             </thead>
             <tbody>
               {submissions.map((sub, index) => (
-                <tr
-                  key={sub.id}
-                  className="border-t hover:bg-gray-50 cursor-pointer"
-                  onClick={() => navigate(`/submissions/${sub.id}`)}
-                >
+                <tr key={sub.id} className="border-t hover:bg-gray-50">
                   <td className="p-3">{index + 1}</td>
-                  <td className="p-3 font-medium">{sub.problemName || sub.problemTitle}</td>
+                  <td className="p-3">
+                    <Link
+                      to={`/problems/${sub.problemId}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {sub.problemName || sub.problemTitle}
+                    </Link>
+                  </td>
                   <td className="p-3">{sub.language}</td>
                   <td
                     className={`p-3 font-semibold ${
@@ -59,6 +62,14 @@ const SubmissionsPage = () => {
                     {sub.verdict}
                   </td>
                   <td className="p-3">{new Date(sub.createdAt || sub.date).toLocaleString()}</td>
+                  <td className="p-3">
+                    <Link
+                      to={`/submissions/${sub.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      View
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

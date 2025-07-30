@@ -15,6 +15,7 @@ import LoginPage from '@/features/auth/Login';
 import Register from '@/features/auth/Register';
 import CreateProblemPage from '@/features/admin/CreateProblemPage';
 import AllSubmissionsPage from '@/features/admin/AllSubmissionsPage';
+import UserPublicProfile from '@/features/profile/UserPublicProfile';
 
 // Error pages
 import NotFound from '@/components/errors/NotFound';
@@ -77,11 +78,9 @@ const AppRoutes = () => {
 
       {/* 6. Admin User List */}
       <Route
-        path="/admin/users"
+        path="/users"
         element={
-          <AdminRoute>
             <UserList />
-          </AdminRoute>
         }
       />
       <Route
@@ -99,7 +98,7 @@ const AppRoutes = () => {
           </AdminRoute>
         } 
       />
-      
+      <Route path="/users/:username" element={<UserPublicProfile />} />
 
       {/* 7. Auth */}
       <Route path="/login" element={<LoginPage />} />

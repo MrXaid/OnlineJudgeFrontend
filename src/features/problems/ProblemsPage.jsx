@@ -28,6 +28,7 @@ const ProblemsPage = () => {
   const [order, setOrder] = useState('asc');
   const [selectedIds, setSelectedIds] = useState([]);
   const [searchTitle, setSearchTitle] = useState('');
+  const [selectionMode, setSelectionMode] = useState(false); // new state
 
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
@@ -80,10 +81,20 @@ const ProblemsPage = () => {
         await problemService.deleteProblem(id);
       }
       setSelectedIds([]);
+      setSelectionMode(false);
       fetchProblems();
     } catch (err) {
       console.error('Failed to delete:', err);
     }
+  };
+
+  const handleSelectMode = () => {
+    setSelectionMode(true);
+  };
+
+  const handleCancel = () => {
+    setSelectionMode(false);
+    setSelectedIds([]);
   };
 
   return (
@@ -140,13 +151,30 @@ const ProblemsPage = () => {
             <option value="desc">Desc</option>
           </select>
 
-          {isAdmin && selectedIds.length > 0 && (
+          {isAdmin && !selectionMode && (
             <button
-              onClick={handleDeleteSelected}
-              className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
+              onClick={handleSelectMode}
+              className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
             >
-              Delete Selected
+              Select
             </button>
+          )}
+
+          {isAdmin && selectionMode && (
+            <>
+              <button
+                onClick={handleDeleteSelected}
+                className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
+              >
+                Delete Selected
+              </button>
+              <button
+                onClick={handleCancel}
+                className="bg-gray-300 text-black px-4 py-1 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+            </>
           )}
         </div>
 
@@ -181,7 +209,7 @@ const ProblemsPage = () => {
           <table className="w-full table-auto border">
             <thead className="bg-gray-100 dark:bg-gray-800 text-left">
               <tr>
-                {isAdmin && <th className="p-3">Select</th>}
+                {isAdmin && selectionMode && <th className="p-3">Select</th>}
                 <th className="p-3">#</th>
                 <th className="p-3">Title</th>
                 <th className="p-3">Difficulty</th>
@@ -191,7 +219,7 @@ const ProblemsPage = () => {
             <tbody>
               {problems.map((problem, index) => (
                 <tr key={problem.id} className="border-t hover:bg-gray-50 dark:hover:bg-gray-900">
-                  {isAdmin && (
+                  {isAdmin && selectionMode && (
                     <td className="p-3">
                       <input
                         type="checkbox"

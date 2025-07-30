@@ -1,10 +1,11 @@
 // features/profile/ActivityGraph.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef} from 'react';
 
 const ActivityGraph = () => {
   const [activityData, setActivityData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const scrollContainerRef = useRef(null);
 
   const generateDateRange = () => {
     const dates = [];
@@ -56,6 +57,11 @@ const ActivityGraph = () => {
   useEffect(() => {
     fetchActivityData();
   }, []);
+  useEffect(() => {
+  if (!loading && scrollContainerRef.current) {
+    scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+  }
+}, [loading]);
 
   const getColor = (count) => {
     if (count === 0) return 'bg-gray-200 dark:bg-gray-700';
@@ -113,7 +119,7 @@ const ActivityGraph = () => {
         </p>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" ref={scrollContainerRef}>
         <div className="inline-block min-w-full">
           <div className="flex mb-2">
             <div className="w-8"></div>
